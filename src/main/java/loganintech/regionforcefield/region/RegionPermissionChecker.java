@@ -83,21 +83,32 @@ public class RegionPermissionChecker {
     }
 
     /**
-     * Checks if a player can enter a specific region.
+     * Checks if a player can actually enter a region.
+     * Takes into account entry deny flag, bypass permissions, and member/owner status.
      *
      * @param player the player to check
      * @param region the region to check
-     * @return true if the player can enter, false otherwise
+     * @return true if the player CAN enter (no forcefield), false if blocked (show forcefield)
      */
     private boolean canEnterRegion(@NotNull LocalPlayer player, @NotNull ProtectedRegion region) {
         // Check the ENTRY flag
-        // If ENTRY is set to DENY, the player cannot enter unless they have bypass permissions
         if (region.getFlag(Flags.ENTRY) == com.sk89q.worldguard.protection.flags.StateFlag.State.DENY) {
+            // Check if player has bypass permission (includes ops)
+            if (player.hasPermission("worldguard.region.bypass." + region.getId()) ||
+                player.hasPermission("worldguard.region.bypass.*")) {
+                return true;  // Can enter (has bypass), no forcefield
+            }
+
             // Check if the player is a member or owner of the region
-            return region.isMember(player) || region.isOwner(player);
+            if (region.isMember(player) || region.isOwner(player)) {
+                return true;  // Can enter (is member/owner), no forcefield
+            }
+
+            // Player cannot enter, show forcefield
+            return false;
         }
 
-        // If ENTRY is not explicitly denied, the player can enter
+        // If ENTRY is not explicitly denied, player can enter
         return true;
     }
 }

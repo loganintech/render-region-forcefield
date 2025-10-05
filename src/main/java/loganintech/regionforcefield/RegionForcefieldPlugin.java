@@ -2,6 +2,7 @@ package loganintech.regionforcefield;
 
 import loganintech.regionforcefield.command.ForcefieldCommand;
 import loganintech.regionforcefield.forcefield.ForcefieldRenderer;
+import loganintech.regionforcefield.listener.PlayerListener;
 import loganintech.regionforcefield.region.RegionPermissionChecker;
 import loganintech.regionforcefield.task.ForcefieldUpdateTask;
 import org.bukkit.command.PluginCommand;
@@ -34,6 +35,9 @@ public final class RegionForcefieldPlugin extends JavaPlugin {
             // Initialize components
             this.permissionChecker = new RegionPermissionChecker(this);
             this.forcefieldRenderer = new ForcefieldRenderer(this);
+
+            // Register listeners
+            getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
 
             // Register commands
             ForcefieldCommand commandExecutor = new ForcefieldCommand(this);

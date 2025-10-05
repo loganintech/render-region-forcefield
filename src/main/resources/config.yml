@@ -26,3 +26,17 @@ particle-color:
 
 # Particle size (recommended range: 0.5 to 2.0)
 particle-size: 1.0
+
+# Block rendering settings
+# Whether to render actual blocks (glass panes) in addition to particles
+render-blocks: true
+
+# Distance between blocks (in blocks)
+# Higher values = fewer blocks = better performance
+# Must be >= particle-spacing
+block-spacing: 1.0
+
+# Block material to use for forcefields
+# Examples: PURPLE_STAINED_GLASS_PANE, BARRIER, GLASS, LIGHT_BLUE_STAINED_GLASS
+# See https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html for all options
+block-material: PURPLE_STAINED_GLASS_PANE

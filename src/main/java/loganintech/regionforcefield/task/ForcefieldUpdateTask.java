@@ -4,10 +4,12 @@ import loganintech.regionforcefield.RegionForcefieldPlugin;
 import loganintech.regionforcefield.forcefield.ForcefieldRenderer;
 import loganintech.regionforcefield.region.RegionPermissionChecker;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -41,24 +43,30 @@ public class ForcefieldUpdateTask extends BukkitRunnable {
         try {
             // Iterate through all online players
             for (Player player : plugin.getServer().getOnlinePlayers()) {
-                // Get all regions the player cannot enter in their current world
+                // Get all regions the player should see forcefields for
                 Set<ProtectedRegion> blockedRegions = permissionChecker.getBlockedRegions(player, player.getWorld());
 
                 if (!blockedRegions.isEmpty()) {
                     plugin.debug("Processing " + blockedRegions.size() + " blocked regions for " + player.getName());
                 }
 
-                // Render forcefields for nearby blocked regions
+                // Collect all blocks that should be rendered for this player
+                Set<Location> allBlocks = new HashSet<>();
                 int rendered = 0;
+
                 for (ProtectedRegion region : blockedRegions) {
                     if (isRegionNearPlayer(player, region)) {
-                        forcefieldRenderer.renderForcefield(player, region, player.getWorld());
+                        Set<Location> regionBlocks = forcefieldRenderer.renderForcefield(player, region, player.getWorld());
+                        allBlocks.addAll(regionBlocks);
                         rendered++;
                     }
                 }
 
+                // Update the player's blocks (remove old ones, keep new ones)
+                forcefieldRenderer.updateBlocks(player, allBlocks);
+
                 if (rendered > 0) {
-                    plugin.debug("Rendered " + rendered + " forcefields for " + player.getName());
+                    plugin.debug("Rendered " + rendered + " forcefields (" + allBlocks.size() + " blocks) for " + player.getName());
                 }
             }
         } catch (Exception e) {

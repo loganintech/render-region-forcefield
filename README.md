@@ -5,10 +5,14 @@ A Minecraft plugin that renders visible particle forcefields around WorldGuard r
 ## Features
 
 - Automatically detects WorldGuard regions with `entry deny` flag
-- Renders particle forcefields only visible to players who cannot enter
+- Renders **visible glass pane barriers** and particle effects for blocked regions
+- Only shows forcefields to players who **actually cannot enter** (respects bypass permissions and ops)
+- Glass panes only placed where there's currently air (doesn't cover existing blocks)
 - Configurable particle color, size, spacing, and render distance
+- Configurable block material (glass panes, barriers, etc.)
 - Supports cuboid and polygonal region types
 - Performance-optimized with distance-based rendering
+- Automatic cleanup when players move away or disconnect
 - Clean, readable, and well-documented code
 
 ## Requirements
@@ -85,14 +89,27 @@ particle-color:
 
 # Particle size (0.5-2.0 recommended)
 particle-size: 1.0
+
+# Block rendering settings
+# Whether to render actual blocks (glass panes) in addition to particles
+render-blocks: true
+
+# Distance between blocks (in blocks)
+block-spacing: 1.0
+
+# Block material to use (e.g., PURPLE_STAINED_GLASS_PANE, BARRIER, GLASS)
+block-material: PURPLE_STAINED_GLASS_PANE
 ```
 
 ## Performance Tips
 
 - Reduce `max-render-distance` for servers with many regions
 - Increase `particle-spacing` to reduce particle count
+- Increase `block-spacing` to reduce block count
+- Set `render-blocks: false` to disable glass panes and only use particles
 - Set `render-walls: false` to only show edges
 - Increase `update-interval-ticks` if you don't need real-time updates
+- Use `BARRIER` blocks instead of glass panes (less visible but lighter)
 
 ## Troubleshooting
 
@@ -102,8 +119,10 @@ particle-size: 1.0
 2. Check the server console for debug messages
 3. Use `/forcefield info` to see if regions are being detected
 4. Verify the region has `entry deny` set: `/rg info <region>`
-5. Check you're not a member/owner of the region
+5. **Check you can't actually enter** - ops and members won't see forcefields
 6. Ensure you're within render distance of the region (default: 100 blocks)
+7. Try setting `render-blocks: true` if you only see particles
+8. Check that locations aren't already occupied by blocks
 
 ### Plugin won't load
 
