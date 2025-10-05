@@ -241,20 +241,49 @@ public class ForcefieldCommand implements CommandExecutor, TabCompleter {
         sender.sendMessage(ChatColor.YELLOW + "/forcefield help " + ChatColor.GRAY + "- Show this help message");
     }
 
+    /**
+     * Calculates the distance from a player to the nearest point on a region's bounding box.
+     *
+     * @param player the player
+     * @param region the region
+     * @return the distance in blocks
+     */
     private double calculateDistance(@NotNull Player player, @NotNull ProtectedRegion region) {
         double playerX = player.getLocation().getX();
         double playerY = player.getLocation().getY();
         double playerZ = player.getLocation().getZ();
 
-        double regionCenterX = (region.getMinimumPoint().x() + region.getMaximumPoint().x()) / 2.0;
-        double regionCenterY = (region.getMinimumPoint().y() + region.getMaximumPoint().y()) / 2.0;
-        double regionCenterZ = (region.getMinimumPoint().z() + region.getMaximumPoint().z()) / 2.0;
+        // Get region bounds
+        int minX = region.getMinimumPoint().x();
+        int minY = region.getMinimumPoint().y();
+        int minZ = region.getMinimumPoint().z();
+        int maxX = region.getMaximumPoint().x();
+        int maxY = region.getMaximumPoint().y();
+        int maxZ = region.getMaximumPoint().z();
 
+        // Find the closest point on the region's bounding box to the player
+        double closestX = clamp(playerX, minX, maxX);
+        double closestY = clamp(playerY, minY, maxY);
+        double closestZ = clamp(playerZ, minZ, maxZ);
+
+        // Calculate distance from player to the closest point on the region
         return Math.sqrt(
-            Math.pow(playerX - regionCenterX, 2) +
-            Math.pow(playerY - regionCenterY, 2) +
-            Math.pow(playerZ - regionCenterZ, 2)
+            Math.pow(playerX - closestX, 2) +
+            Math.pow(playerY - closestY, 2) +
+            Math.pow(playerZ - closestZ, 2)
         );
+    }
+
+    /**
+     * Clamps a value between a minimum and maximum.
+     *
+     * @param value the value to clamp
+     * @param min   the minimum value
+     * @param max   the maximum value
+     * @return the clamped value
+     */
+    private double clamp(double value, double min, double max) {
+        return Math.max(min, Math.min(max, value));
     }
 
     @Override
