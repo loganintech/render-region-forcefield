@@ -35,8 +35,7 @@ public class ForcefieldCommand implements CommandExecutor, TabCompleter {
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command,
                             @NotNull String label, @NotNull String[] args) {
         if (args.length == 0) {
-            sendHelp(sender);
-            return true;
+            return handleHelp(sender);
         }
 
         switch (args[0].toLowerCase()) {
@@ -53,8 +52,7 @@ public class ForcefieldCommand implements CommandExecutor, TabCompleter {
             case "material":
                 return handleMaterial(sender, args);
             case "help":
-                sendHelp(sender);
-                return true;
+                return handleHelp(sender);
             default:
                 sender.sendMessage(ChatColor.RED + "Unknown subcommand. Use /forcefield help");
                 return true;
@@ -234,7 +232,7 @@ public class ForcefieldCommand implements CommandExecutor, TabCompleter {
     }
 
     private boolean handleMaterial(@NotNull CommandSender sender, @NotNull String[] args) {
-        if (!sender.hasPermission("regionforcefield.reload")) {
+        if (!sender.hasPermission("regionforcefield.material")) {
             sender.sendMessage(ChatColor.RED + "You don't have permission to use this command.");
             return true;
         }
@@ -271,6 +269,16 @@ public class ForcefieldCommand implements CommandExecutor, TabCompleter {
             sender.sendMessage(ChatColor.GRAY + "See: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html");
         }
 
+        return true;
+    }
+
+    private boolean handleHelp(@NotNull CommandSender sender) {
+        if (!sender.hasPermission("regionforcefield.help")) {
+            sender.sendMessage(ChatColor.RED + "You don't have permission to use this command.");
+            return true;
+        }
+
+        sendHelp(sender);
         return true;
     }
 
@@ -336,15 +344,36 @@ public class ForcefieldCommand implements CommandExecutor, TabCompleter {
         List<String> completions = new ArrayList<>();
 
         if (args.length == 1) {
-            List<String> subcommands = Arrays.asList("debug", "reload", "status", "info", "test", "material", "help");
             String input = args[0].toLowerCase();
 
-            for (String subcommand : subcommands) {
-                if (subcommand.startsWith(input)) {
-                    completions.add(subcommand);
-                }
+            // Only show subcommands the sender has permission to use
+            if (sender.hasPermission("regionforcefield.debug") && "debug".startsWith(input)) {
+                completions.add("debug");
+            }
+            if (sender.hasPermission("regionforcefield.reload") && "reload".startsWith(input)) {
+                completions.add("reload");
+            }
+            if (sender.hasPermission("regionforcefield.status") && "status".startsWith(input)) {
+                completions.add("status");
+            }
+            if (sender.hasPermission("regionforcefield.info") && "info".startsWith(input)) {
+                completions.add("info");
+            }
+            if (sender.hasPermission("regionforcefield.debug") && "test".startsWith(input)) {
+                completions.add("test");
+            }
+            if (sender.hasPermission("regionforcefield.material") && "material".startsWith(input)) {
+                completions.add("material");
+            }
+            if (sender.hasPermission("regionforcefield.help") && "help".startsWith(input)) {
+                completions.add("help");
             }
         } else if (args.length == 2 && args[0].equalsIgnoreCase("material")) {
+            // Only show material suggestions if the sender has permission
+            if (!sender.hasPermission("regionforcefield.material")) {
+                return completions;
+            }
+
             // Suggest common block materials
             List<String> commonMaterials = Arrays.asList(
                 "BARRIER", "GLASS", "GLASS_PANE",

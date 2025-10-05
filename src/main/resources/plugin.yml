@@ -24,11 +24,13 @@ permissions:
       regionforcefield.reload: true
       regionforcefield.status: true
       regionforcefield.info: true
+      regionforcefield.material: true
+      regionforcefield.help: true
   regionforcefield.command:
     description: Allows access to the base /forcefield command
     default: true
   regionforcefield.debug:
-    description: Allows toggling debug mode
+    description: Allows toggling debug mode and using test command
     default: op
   regionforcefield.reload:
     description: Allows reloading the plugin configuration
@@ -38,4 +40,10 @@ permissions:
     default: op
   regionforcefield.info:
     description: Allows viewing region information
+    default: true
+  regionforcefield.material:
+    description: Allows changing the forcefield block material
+    default: op
+  regionforcefield.help:
+    description: Allows viewing command help
     default: true
