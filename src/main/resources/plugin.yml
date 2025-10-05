@@ -1,0 +1,8 @@
+name: RegionForcefield
+version: ${version}
+main: loganintech.regionforcefield.RegionForcefieldPlugin
+api-version: '1.21'
+depend: [WorldGuard]
+author: loganintech
+description: Renders visible forcefields around WorldGuard regions that players cannot enter
+website: https://github.com/loganintech
