@@ -48,6 +48,8 @@ Once installed, the plugin automatically works with your existing WorldGuard reg
 - `/forcefield reload` or `/ff reload` - Reload the configuration file
 - `/forcefield status` or `/ff status` - View plugin status and settings
 - `/forcefield info` or `/ff info` - View information about blocked regions nearby
+- `/forcefield material <MATERIAL>` or `/ff material <MATERIAL>` - Change the block material (e.g., BARRIER, GLASS)
+- `/forcefield test` or `/ff test` - Test block rendering
 - `/forcefield help` or `/ff help` - Show command help
 
 ### Permissions

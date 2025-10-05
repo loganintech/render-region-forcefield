@@ -50,6 +50,8 @@ public class ForcefieldCommand implements CommandExecutor, TabCompleter {
                 return handleInfo(sender);
             case "test":
                 return handleTest(sender);
+            case "material":
+                return handleMaterial(sender, args);
             case "help":
                 sendHelp(sender);
                 return true;
@@ -231,6 +233,47 @@ public class ForcefieldCommand implements CommandExecutor, TabCompleter {
         return true;
     }
 
+    private boolean handleMaterial(@NotNull CommandSender sender, @NotNull String[] args) {
+        if (!sender.hasPermission("regionforcefield.reload")) {
+            sender.sendMessage(ChatColor.RED + "You don't have permission to use this command.");
+            return true;
+        }
+
+        if (args.length < 2) {
+            sender.sendMessage(ChatColor.RED + "Usage: /forcefield material <MATERIAL>");
+            sender.sendMessage(ChatColor.GRAY + "Example: /forcefield material BARRIER");
+            sender.sendMessage(ChatColor.GRAY + "See: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html");
+            return true;
+        }
+
+        String materialName = args[1].toUpperCase();
+
+        try {
+            // Validate the material exists
+            Material material = Material.valueOf(materialName);
+
+            // Check if it's a valid block material
+            if (!material.isBlock()) {
+                sender.sendMessage(ChatColor.RED + "'" + materialName + "' is not a block material!");
+                return true;
+            }
+
+            // Update config
+            plugin.getConfig().set("block-material", materialName);
+            plugin.saveConfig();
+
+            sender.sendMessage(ChatColor.GREEN + "Block material set to " + ChatColor.YELLOW + materialName);
+            sender.sendMessage(ChatColor.GRAY + "Forcefields will update on next render cycle.");
+            plugin.getLogger().info(sender.getName() + " changed block material to " + materialName);
+
+        } catch (IllegalArgumentException e) {
+            sender.sendMessage(ChatColor.RED + "Unknown material: " + materialName);
+            sender.sendMessage(ChatColor.GRAY + "See: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html");
+        }
+
+        return true;
+    }
+
     private void sendHelp(@NotNull CommandSender sender) {
         sender.sendMessage(ChatColor.GOLD + "=== RegionForcefield Commands ===");
         sender.sendMessage(ChatColor.YELLOW + "/forcefield debug " + ChatColor.GRAY + "- Toggle debug mode");
@@ -238,6 +281,7 @@ public class ForcefieldCommand implements CommandExecutor, TabCompleter {
         sender.sendMessage(ChatColor.YELLOW + "/forcefield status " + ChatColor.GRAY + "- Show plugin status");
         sender.sendMessage(ChatColor.YELLOW + "/forcefield info " + ChatColor.GRAY + "- Show region information");
         sender.sendMessage(ChatColor.YELLOW + "/forcefield test " + ChatColor.GRAY + "- Test block rendering");
+        sender.sendMessage(ChatColor.YELLOW + "/forcefield material <MATERIAL> " + ChatColor.GRAY + "- Change block material");
         sender.sendMessage(ChatColor.YELLOW + "/forcefield help " + ChatColor.GRAY + "- Show this help message");
     }
 
@@ -292,12 +336,29 @@ public class ForcefieldCommand implements CommandExecutor, TabCompleter {
         List<String> completions = new ArrayList<>();
 
         if (args.length == 1) {
-            List<String> subcommands = Arrays.asList("debug", "reload", "status", "info", "test", "help");
+            List<String> subcommands = Arrays.asList("debug", "reload", "status", "info", "test", "material", "help");
             String input = args[0].toLowerCase();
 
             for (String subcommand : subcommands) {
                 if (subcommand.startsWith(input)) {
                     completions.add(subcommand);
+                }
+            }
+        } else if (args.length == 2 && args[0].equalsIgnoreCase("material")) {
+            // Suggest common block materials
+            List<String> commonMaterials = Arrays.asList(
+                "BARRIER", "GLASS", "GLASS_PANE",
+                "PURPLE_STAINED_GLASS", "PURPLE_STAINED_GLASS_PANE",
+                "RED_STAINED_GLASS", "RED_STAINED_GLASS_PANE",
+                "BLUE_STAINED_GLASS", "BLUE_STAINED_GLASS_PANE",
+                "LIGHT_BLUE_STAINED_GLASS", "LIGHT_BLUE_STAINED_GLASS_PANE",
+                "WHITE_STAINED_GLASS", "WHITE_STAINED_GLASS_PANE"
+            );
+            String input = args[1].toUpperCase();
+
+            for (String material : commonMaterials) {
+                if (material.startsWith(input)) {
+                    completions.add(material);
                 }
             }
         }
