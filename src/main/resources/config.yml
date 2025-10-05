@@ -10,13 +10,17 @@ update-interval-ticks: 20
 # Reducing this can improve performance on servers with many regions
 max-render-distance: 100
 
-# Distance between particles (in blocks)
-# Smaller values = more particles = more detailed forcefields but more performance intensive
-particle-spacing: 0.5
-
 # Whether to render the walls (faces) of regions, or just the edges
 # Setting to false will only render the outlines/edges
 render-walls: true
+
+# Particle rendering settings
+# Whether to render particles
+render-particles: true
+
+# Distance between particles (in blocks)
+# Smaller values = more particles = more detailed forcefields but more performance intensive
+particle-spacing: 0.5
 
 # Particle color (RGB values from 0-255)
 particle-color:

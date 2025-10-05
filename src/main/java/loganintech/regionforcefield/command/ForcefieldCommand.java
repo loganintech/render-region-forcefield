@@ -111,16 +111,27 @@ public class ForcefieldCommand implements CommandExecutor, TabCompleter {
             plugin.getConfig().getLong("update-interval-ticks", 20L) + " ticks");
         sender.sendMessage(ChatColor.YELLOW + "Max Render Distance: " + ChatColor.WHITE +
             plugin.getConfig().getInt("max-render-distance", 100) + " blocks");
-        sender.sendMessage(ChatColor.YELLOW + "Particle Spacing: " + ChatColor.WHITE +
-            plugin.getConfig().getDouble("particle-spacing", 0.5) + " blocks");
         sender.sendMessage(ChatColor.YELLOW + "Render Walls: " + ChatColor.WHITE +
             (plugin.getConfig().getBoolean("render-walls", true) ? "Yes" : "No"));
 
+        sender.sendMessage(ChatColor.GOLD + "Particles:");
+        sender.sendMessage(ChatColor.YELLOW + "  Enabled: " + ChatColor.WHITE +
+            (plugin.getConfig().getBoolean("render-particles", true) ? "Yes" : "No"));
+        sender.sendMessage(ChatColor.YELLOW + "  Spacing: " + ChatColor.WHITE +
+            plugin.getConfig().getDouble("particle-spacing", 0.5) + " blocks");
         int red = plugin.getConfig().getInt("particle-color.red", 147);
         int green = plugin.getConfig().getInt("particle-color.green", 112);
         int blue = plugin.getConfig().getInt("particle-color.blue", 219);
-        sender.sendMessage(ChatColor.YELLOW + "Particle Color: " + ChatColor.WHITE +
+        sender.sendMessage(ChatColor.YELLOW + "  Color: " + ChatColor.WHITE +
             "RGB(" + red + ", " + green + ", " + blue + ")");
+
+        sender.sendMessage(ChatColor.GOLD + "Blocks:");
+        sender.sendMessage(ChatColor.YELLOW + "  Enabled: " + ChatColor.WHITE +
+            (plugin.getConfig().getBoolean("render-blocks", true) ? "Yes" : "No"));
+        sender.sendMessage(ChatColor.YELLOW + "  Spacing: " + ChatColor.WHITE +
+            plugin.getConfig().getDouble("block-spacing", 1.0) + " blocks");
+        sender.sendMessage(ChatColor.YELLOW + "  Material: " + ChatColor.WHITE +
+            plugin.getConfig().getString("block-material", "PURPLE_STAINED_GLASS_PANE"));
 
         sender.sendMessage(ChatColor.YELLOW + "Online Players: " + ChatColor.WHITE +
             plugin.getServer().getOnlinePlayers().size());

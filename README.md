@@ -75,39 +75,32 @@ update-interval-ticks: 20
 # Maximum render distance in blocks
 max-render-distance: 100
 
-# Spacing between particles
-particle-spacing: 0.5
-
 # Render walls or just edges
 render-walls: true
 
-# Particle color (RGB 0-255)
+# Particle rendering
+render-particles: true
+particle-spacing: 0.5
 particle-color:
   red: 147
   green: 112
   blue: 219
-
-# Particle size (0.5-2.0 recommended)
 particle-size: 1.0
 
-# Block rendering settings
-# Whether to render actual blocks (glass panes) in addition to particles
+# Block rendering
 render-blocks: true
-
-# Distance between blocks (in blocks)
 block-spacing: 1.0
-
-# Block material to use (e.g., PURPLE_STAINED_GLASS_PANE, BARRIER, GLASS)
 block-material: PURPLE_STAINED_GLASS_PANE
 ```
 
 ## Performance Tips
 
 - Reduce `max-render-distance` for servers with many regions
+- Set `render-particles: false` to disable particles and only show blocks
+- Set `render-blocks: false` to disable glass panes and only use particles
 - Increase `particle-spacing` to reduce particle count
 - Increase `block-spacing` to reduce block count
-- Set `render-blocks: false` to disable glass panes and only use particles
-- Set `render-walls: false` to only show edges
+- Set `render-walls: false` to only show edges (not faces)
 - Increase `update-interval-ticks` if you don't need real-time updates
 - Use `BARRIER` blocks instead of glass panes (less visible but lighter)
 

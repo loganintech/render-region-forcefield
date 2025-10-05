@@ -269,6 +269,10 @@ public class ForcefieldRenderer {
      * Spawns a single particle at the specified location for a player.
      */
     private void spawnParticle(@NotNull Player player, @NotNull World world, double x, double y, double z) {
+        if (!plugin.getConfig().getBoolean("render-particles", true)) {
+            return;
+        }
+
         Location location = new Location(world, x, y, z);
         player.spawnParticle(Particle.DUST, location, 1, 0, 0, 0, 0, dustOptions);
     }
