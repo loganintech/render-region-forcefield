@@ -7,6 +7,7 @@ import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.flags.Flags;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+import loganintech.regionforcefield.RegionForcefieldPlugin;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -19,6 +20,19 @@ import java.util.Set;
  */
 public class RegionPermissionChecker {
 
+    private final RegionForcefieldPlugin plugin;
+    private final WorldGuardPlugin worldGuard;
+
+    /**
+     * Creates a new region permission checker.
+     *
+     * @param plugin the plugin instance
+     */
+    public RegionPermissionChecker(@NotNull RegionForcefieldPlugin plugin) {
+        this.plugin = plugin;
+        this.worldGuard = (WorldGuardPlugin) plugin.getServer().getPluginManager().getPlugin("WorldGuard");
+    }
+
     /**
      * Gets all regions in a world that the specified player cannot enter.
      *
@@ -30,24 +44,39 @@ public class RegionPermissionChecker {
     public Set<ProtectedRegion> getBlockedRegions(@NotNull Player player, @NotNull World world) {
         Set<ProtectedRegion> blockedRegions = new HashSet<>();
 
-        // Get the region manager for this world
-        RegionManager regionManager = WorldGuard.getInstance()
-                .getPlatform()
-                .getRegionContainer()
-                .get(BukkitAdapter.adapt(world));
+        try {
+            // Get the region manager for this world
+            RegionManager regionManager = WorldGuard.getInstance()
+                    .getPlatform()
+                    .getRegionContainer()
+                    .get(BukkitAdapter.adapt(world));
 
-        if (regionManager == null) {
-            return blockedRegions;
-        }
-
-        // Convert Bukkit player to WorldGuard LocalPlayer
-        LocalPlayer localPlayer = WorldGuardPlugin.inst().wrapPlayer(player);
-
-        // Check each region
-        for (ProtectedRegion region : regionManager.getRegions().values()) {
-            if (!canEnterRegion(localPlayer, region)) {
-                blockedRegions.add(region);
+            if (regionManager == null) {
+                return blockedRegions;
             }
+
+            // Convert Bukkit player to WorldGuard LocalPlayer
+            if (worldGuard == null) {
+                plugin.getLogger().warning("WorldGuard plugin reference is null!");
+                return blockedRegions;
+            }
+
+            LocalPlayer localPlayer = worldGuard.wrapPlayer(player);
+
+            // Check each region
+            for (ProtectedRegion region : regionManager.getRegions().values()) {
+                if (!canEnterRegion(localPlayer, region)) {
+                    blockedRegions.add(region);
+                    plugin.debug("Player " + player.getName() + " blocked from region: " + region.getId());
+                }
+            }
+
+            if (!blockedRegions.isEmpty()) {
+                plugin.debug("Found " + blockedRegions.size() + " blocked regions for " + player.getName());
+            }
+        } catch (Exception e) {
+            plugin.getLogger().warning("Error checking blocked regions: " + e.getMessage());
+            e.printStackTrace();
         }
 
         return blockedRegions;

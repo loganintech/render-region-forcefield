@@ -38,17 +38,32 @@ public class ForcefieldUpdateTask extends BukkitRunnable {
 
     @Override
     public void run() {
-        // Iterate through all online players
-        for (Player player : plugin.getServer().getOnlinePlayers()) {
-            // Get all regions the player cannot enter in their current world
-            Set<ProtectedRegion> blockedRegions = permissionChecker.getBlockedRegions(player, player.getWorld());
+        try {
+            // Iterate through all online players
+            for (Player player : plugin.getServer().getOnlinePlayers()) {
+                // Get all regions the player cannot enter in their current world
+                Set<ProtectedRegion> blockedRegions = permissionChecker.getBlockedRegions(player, player.getWorld());
 
-            // Render forcefields for nearby blocked regions
-            for (ProtectedRegion region : blockedRegions) {
-                if (isRegionNearPlayer(player, region)) {
-                    forcefieldRenderer.renderForcefield(player, region, player.getWorld());
+                if (!blockedRegions.isEmpty()) {
+                    plugin.debug("Processing " + blockedRegions.size() + " blocked regions for " + player.getName());
+                }
+
+                // Render forcefields for nearby blocked regions
+                int rendered = 0;
+                for (ProtectedRegion region : blockedRegions) {
+                    if (isRegionNearPlayer(player, region)) {
+                        forcefieldRenderer.renderForcefield(player, region, player.getWorld());
+                        rendered++;
+                    }
+                }
+
+                if (rendered > 0) {
+                    plugin.debug("Rendered " + rendered + " forcefields for " + player.getName());
                 }
             }
+        } catch (Exception e) {
+            plugin.getLogger().warning("Error in forcefield update task: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 

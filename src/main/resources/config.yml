@@ -1,5 +1,8 @@
 # RegionForcefield Configuration
 
+# Enable debug logging (useful for troubleshooting)
+debug: false
+
 # How often to update forcefields (in ticks, 20 ticks = 1 second)
 update-interval-ticks: 20
 

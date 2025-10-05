@@ -8,9 +8,9 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Particle;
+import loganintech.regionforcefield.RegionForcefieldPlugin;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -20,7 +20,7 @@ import java.util.List;
  */
 public class ForcefieldRenderer {
 
-    private final Plugin plugin;
+    private final RegionForcefieldPlugin plugin;
     private final double particleSpacing;
     private final Particle.DustOptions dustOptions;
 
@@ -29,7 +29,7 @@ public class ForcefieldRenderer {
      *
      * @param plugin the plugin instance
      */
-    public ForcefieldRenderer(@NotNull Plugin plugin) {
+    public ForcefieldRenderer(@NotNull RegionForcefieldPlugin plugin) {
         this.plugin = plugin;
         this.particleSpacing = plugin.getConfig().getDouble("particle-spacing", 0.5);
 
@@ -50,13 +50,21 @@ public class ForcefieldRenderer {
      * @param world  the world the region is in
      */
     public void renderForcefield(@NotNull Player player, @NotNull ProtectedRegion region, @NotNull World world) {
-        if (region instanceof ProtectedCuboidRegion) {
-            renderCuboidForcefield(player, (ProtectedCuboidRegion) region, world);
-        } else if (region instanceof ProtectedPolygonalRegion) {
-            renderPolygonalForcefield(player, (ProtectedPolygonalRegion) region, world);
-        } else {
-            // For other region types, fall back to rendering a bounding box
-            renderBoundingBoxForcefield(player, region, world);
+        try {
+            plugin.debug("Rendering forcefield for region " + region.getId() + " to player " + player.getName());
+
+            if (region instanceof ProtectedCuboidRegion) {
+                renderCuboidForcefield(player, (ProtectedCuboidRegion) region, world);
+            } else if (region instanceof ProtectedPolygonalRegion) {
+                renderPolygonalForcefield(player, (ProtectedPolygonalRegion) region, world);
+            } else {
+                // For other region types, fall back to rendering a bounding box
+                plugin.debug("Using bounding box for region type: " + region.getClass().getSimpleName());
+                renderBoundingBoxForcefield(player, region, world);
+            }
+        } catch (Exception e) {
+            plugin.getLogger().warning("Error rendering forcefield for region " + region.getId() + ": " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
