@@ -5,6 +5,9 @@ import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import loganintech.regionforcefield.RegionForcefieldPlugin;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -45,6 +48,8 @@ public class ForcefieldCommand implements CommandExecutor, TabCompleter {
                 return handleStatus(sender);
             case "info":
                 return handleInfo(sender);
+            case "test":
+                return handleTest(sender);
             case "help":
                 sendHelp(sender);
                 return true;
@@ -177,12 +182,51 @@ public class ForcefieldCommand implements CommandExecutor, TabCompleter {
         return true;
     }
 
+    private boolean handleTest(@NotNull CommandSender sender) {
+        if (!(sender instanceof Player)) {
+            sender.sendMessage(ChatColor.RED + "This command can only be used by players.");
+            return true;
+        }
+
+        if (!sender.hasPermission("regionforcefield.debug")) {
+            sender.sendMessage(ChatColor.RED + "You don't have permission to use this command.");
+            return true;
+        }
+
+        Player player = (Player) sender;
+
+        // Place test blocks in a small box around the player
+        sender.sendMessage(ChatColor.YELLOW + "Placing test blocks around you...");
+
+        Location loc = player.getLocation();
+        BlockData glassData = Material.PURPLE_STAINED_GLASS_PANE.createBlockData();
+
+        int count = 0;
+        for (int x = -2; x <= 2; x++) {
+            for (int z = -2; z <= 2; z++) {
+                if (x == 0 && z == 0) continue; // Skip player location
+
+                Location testLoc = loc.clone().add(x, 0, z);
+                if (testLoc.getBlock().getType() == Material.AIR) {
+                    player.sendBlockChange(testLoc, glassData);
+                    count++;
+                }
+            }
+        }
+
+        sender.sendMessage(ChatColor.GREEN + "Placed " + count + " test blocks around you.");
+        sender.sendMessage(ChatColor.GRAY + "These are client-side only and will disappear on relog.");
+
+        return true;
+    }
+
     private void sendHelp(@NotNull CommandSender sender) {
         sender.sendMessage(ChatColor.GOLD + "=== RegionForcefield Commands ===");
         sender.sendMessage(ChatColor.YELLOW + "/forcefield debug " + ChatColor.GRAY + "- Toggle debug mode");
         sender.sendMessage(ChatColor.YELLOW + "/forcefield reload " + ChatColor.GRAY + "- Reload configuration");
         sender.sendMessage(ChatColor.YELLOW + "/forcefield status " + ChatColor.GRAY + "- Show plugin status");
         sender.sendMessage(ChatColor.YELLOW + "/forcefield info " + ChatColor.GRAY + "- Show region information");
+        sender.sendMessage(ChatColor.YELLOW + "/forcefield test " + ChatColor.GRAY + "- Test block rendering");
         sender.sendMessage(ChatColor.YELLOW + "/forcefield help " + ChatColor.GRAY + "- Show this help message");
     }
 
@@ -208,7 +252,7 @@ public class ForcefieldCommand implements CommandExecutor, TabCompleter {
         List<String> completions = new ArrayList<>();
 
         if (args.length == 1) {
-            List<String> subcommands = Arrays.asList("debug", "reload", "status", "info", "help");
+            List<String> subcommands = Arrays.asList("debug", "reload", "status", "info", "test", "help");
             String input = args[0].toLowerCase();
 
             for (String subcommand : subcommands) {

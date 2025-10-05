@@ -77,6 +77,7 @@ public class ForcefieldUpdateTask extends BukkitRunnable {
 
     /**
      * Checks if a region is near enough to a player to render.
+     * Calculates distance to the nearest point on the region's bounding box.
      *
      * @param player the player
      * @param region the region
@@ -88,18 +89,40 @@ public class ForcefieldUpdateTask extends BukkitRunnable {
         double playerY = player.getLocation().getY();
         double playerZ = player.getLocation().getZ();
 
-        // Get region's center (approximate)
-        double regionCenterX = (region.getMinimumPoint().x() + region.getMaximumPoint().x()) / 2.0;
-        double regionCenterY = (region.getMinimumPoint().y() + region.getMaximumPoint().y()) / 2.0;
-        double regionCenterZ = (region.getMinimumPoint().z() + region.getMaximumPoint().z()) / 2.0;
+        // Get region bounds
+        int minX = region.getMinimumPoint().x();
+        int minY = region.getMinimumPoint().y();
+        int minZ = region.getMinimumPoint().z();
+        int maxX = region.getMaximumPoint().x();
+        int maxY = region.getMaximumPoint().y();
+        int maxZ = region.getMaximumPoint().z();
 
-        // Calculate distance
+        // Find the closest point on the region's bounding box to the player
+        double closestX = clamp(playerX, minX, maxX);
+        double closestY = clamp(playerY, minY, maxY);
+        double closestZ = clamp(playerZ, minZ, maxZ);
+
+        // Calculate distance from player to the closest point on the region
         double distance = Math.sqrt(
-            Math.pow(playerX - regionCenterX, 2) +
-            Math.pow(playerY - regionCenterY, 2) +
-            Math.pow(playerZ - regionCenterZ, 2)
+            Math.pow(playerX - closestX, 2) +
+            Math.pow(playerY - closestY, 2) +
+            Math.pow(playerZ - closestZ, 2)
         );
 
+        plugin.debug("Player " + player.getName() + " distance to region: " + String.format("%.1f", distance) + " blocks");
+
         return distance <= maxRenderDistance;
+    }
+
+    /**
+     * Clamps a value between a minimum and maximum.
+     *
+     * @param value the value to clamp
+     * @param min   the minimum value
+     * @param max   the maximum value
+     * @return the clamped value
+     */
+    private double clamp(double value, double min, double max) {
+        return Math.max(min, Math.min(max, value));
     }
 }

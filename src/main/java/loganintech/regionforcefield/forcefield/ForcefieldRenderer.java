@@ -286,6 +286,7 @@ public class ForcefieldRenderer {
     private void placeBlock(@NotNull Player player, @NotNull World world,
                            double x, double y, double z, @NotNull Set<Location> blocks) {
         if (!plugin.getConfig().getBoolean("render-blocks", true)) {
+            plugin.debug("Skipping block render (render-blocks is false)");
             return;
         }
 
@@ -295,6 +296,11 @@ public class ForcefieldRenderer {
         if (location.getBlock().getType() == Material.AIR) {
             player.sendBlockChange(location, glassBlockData);
             blocks.add(location);
+            plugin.debug("Placed block at " + location.getBlockX() + "," + location.getBlockY() + "," + location.getBlockZ() +
+                        " for player " + player.getName() + " (material: " + glassBlockData.getMaterial() + ")");
+        } else {
+            plugin.debug("Skipped block at " + location.getBlockX() + "," + location.getBlockY() + "," + location.getBlockZ() +
+                        " - not air (is " + location.getBlock().getType() + ")");
         }
     }
 
