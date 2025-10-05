@@ -25,10 +25,7 @@ import java.util.Set;
 public class ForcefieldRenderer {
 
     private final RegionForcefieldPlugin plugin;
-    private final double particleSpacing;
-    private final Particle.DustOptions dustOptions;
     private final PlayerBlockTracker blockTracker;
-    private final BlockData glassBlockData;
 
     /**
      * Creates a new forcefield renderer.
@@ -37,18 +34,37 @@ public class ForcefieldRenderer {
      */
     public ForcefieldRenderer(@NotNull RegionForcefieldPlugin plugin) {
         this.plugin = plugin;
-        this.particleSpacing = plugin.getConfig().getDouble("particle-spacing", 0.5);
         this.blockTracker = new PlayerBlockTracker();
+    }
 
-        // Get color from config or use default (purple)
+    /**
+     * Gets the particle spacing from config.
+     *
+     * @return particle spacing in blocks
+     */
+    private double getParticleSpacing() {
+        return plugin.getConfig().getDouble("particle-spacing", 0.5);
+    }
+
+    /**
+     * Gets the particle dust options from config.
+     *
+     * @return particle dust options
+     */
+    private Particle.DustOptions getDustOptions() {
         int red = plugin.getConfig().getInt("particle-color.red", 147);
         int green = plugin.getConfig().getInt("particle-color.green", 112);
         int blue = plugin.getConfig().getInt("particle-color.blue", 219);
         float size = (float) plugin.getConfig().getDouble("particle-size", 1.0);
+        return new Particle.DustOptions(Color.fromRGB(red, green, blue), size);
+    }
 
-        this.dustOptions = new Particle.DustOptions(Color.fromRGB(red, green, blue), size);
-
-        // Get block material from config or use purple stained glass pane
+    /**
+     * Gets the block material from config.
+     *
+     * @return block data for the configured material
+     */
+    private BlockData getBlockData() {
         String materialName = plugin.getConfig().getString("block-material", "PURPLE_STAINED_GLASS_PANE");
         Material material;
         try {
@@ -57,7 +73,7 @@ public class ForcefieldRenderer {
             plugin.getLogger().warning("Invalid block material '" + materialName + "', using PURPLE_STAINED_GLASS_PANE");
             material = Material.PURPLE_STAINED_GLASS_PANE;
         }
-        this.glassBlockData = material.createBlockData();
+        return material.createBlockData();
     }
 
     /**
@@ -211,6 +227,7 @@ public class ForcefieldRenderer {
     private void renderVerticalWall(@NotNull Player player, @NotNull World world,
                                     double x1, double z1, double x2, double z2,
                                     double minY, double maxY, @NotNull Set<Location> blocks) {
+        double particleSpacing = getParticleSpacing();
         double distance = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(z2 - z1, 2));
         int horizontalSteps = (int) Math.ceil(distance / particleSpacing);
         int verticalSteps = (int) Math.ceil((maxY - minY) / particleSpacing);
@@ -241,6 +258,7 @@ public class ForcefieldRenderer {
                            double x1, double y1, double z1,
                            double x2, double y2, double z2,
                            @NotNull Set<Location> blocks) {
+        double particleSpacing = getParticleSpacing();
         double distance = Math.sqrt(
             Math.pow(x2 - x1, 2) +
             Math.pow(y2 - y1, 2) +
@@ -274,7 +292,7 @@ public class ForcefieldRenderer {
         }
 
         Location location = new Location(world, x, y, z);
-        player.spawnParticle(Particle.DUST, location, 1, 0, 0, 0, 0, dustOptions);
+        player.spawnParticle(Particle.DUST, location, 1, 0, 0, 0, 0, getDustOptions());
     }
 
     /**
@@ -298,10 +316,11 @@ public class ForcefieldRenderer {
 
         // Only place blocks where there's currently air
         if (location.getBlock().getType() == Material.AIR) {
-            player.sendBlockChange(location, glassBlockData);
+            BlockData blockData = getBlockData();
+            player.sendBlockChange(location, blockData);
             blocks.add(location);
             plugin.debug("Placed block at " + location.getBlockX() + "," + location.getBlockY() + "," + location.getBlockZ() +
-                        " for player " + player.getName() + " (material: " + glassBlockData.getMaterial() + ")");
+                        " for player " + player.getName() + " (material: " + blockData.getMaterial() + ")");
         } else {
             plugin.debug("Skipped block at " + location.getBlockX() + "," + location.getBlockY() + "," + location.getBlockZ() +
                         " - not air (is " + location.getBlock().getType() + ")");
