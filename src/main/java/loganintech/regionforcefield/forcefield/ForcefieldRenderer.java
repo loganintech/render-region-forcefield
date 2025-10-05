@@ -33,10 +33,10 @@ public class ForcefieldRenderer {
         this.plugin = plugin;
         this.particleSpacing = plugin.getConfig().getDouble("particle-spacing", 0.5);
 
-        // Get color from config or use default (cyan)
-        int red = plugin.getConfig().getInt("particle-color.red", 0);
-        int green = plugin.getConfig().getInt("particle-color.green", 255);
-        int blue = plugin.getConfig().getInt("particle-color.blue", 255);
+        // Get color from config or use default (purple)
+        int red = plugin.getConfig().getInt("particle-color.red", 147);
+        int green = plugin.getConfig().getInt("particle-color.green", 112);
+        int blue = plugin.getConfig().getInt("particle-color.blue", 219);
         float size = (float) plugin.getConfig().getDouble("particle-size", 1.0);
 
         this.dustOptions = new Particle.DustOptions(Color.fromRGB(red, green, blue), size);

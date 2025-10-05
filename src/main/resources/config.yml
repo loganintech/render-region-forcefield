@@ -17,9 +17,9 @@ render-walls: true
 
 # Particle color (RGB values from 0-255)
 particle-color:
-  red: 0
-  green: 255
-  blue: 255
+  red: 147
+  green: 112
+  blue: 219
 
 # Particle size (recommended range: 0.5 to 2.0)
 particle-size: 1.0

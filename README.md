@@ -36,7 +36,7 @@ Once installed, the plugin automatically works with your existing WorldGuard reg
 
 1. Create a WorldGuard region: `/rg define myregion`
 2. Set the entry flag to deny: `/rg flag myregion entry deny`
-3. Players who cannot enter the region will see a cyan forcefield around it
+3. Players who cannot enter the region will see a purple forcefield around it
 
 ### Permissions
 
@@ -61,9 +61,9 @@ render-walls: true
 
 # Particle color (RGB 0-255)
 particle-color:
-  red: 0
-  green: 255
-  blue: 255
+  red: 147
+  green: 112
+  blue: 219
 
 # Particle size (0.5-2.0 recommended)
 particle-size: 1.0
