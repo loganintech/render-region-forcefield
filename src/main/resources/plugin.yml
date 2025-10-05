@@ -6,3 +6,36 @@ depend: [WorldGuard]
 author: loganintech
 description: Renders visible forcefields around WorldGuard regions that players cannot enter
 website: https://github.com/loganintech
+
+commands:
+  forcefield:
+    description: Manage RegionForcefield plugin
+    usage: /<command> [debug|reload|status|info|help]
+    aliases: [ff, regionforcefield]
+    permission: regionforcefield.command
+
+permissions:
+  regionforcefield.*:
+    description: Grants all RegionForcefield permissions
+    default: op
+    children:
+      regionforcefield.command: true
+      regionforcefield.debug: true
+      regionforcefield.reload: true
+      regionforcefield.status: true
+      regionforcefield.info: true
+  regionforcefield.command:
+    description: Allows access to the base /forcefield command
+    default: true
+  regionforcefield.debug:
+    description: Allows toggling debug mode
+    default: op
+  regionforcefield.reload:
+    description: Allows reloading the plugin configuration
+    default: op
+  regionforcefield.status:
+    description: Allows viewing plugin status
+    default: op
+  regionforcefield.info:
+    description: Allows viewing region information
+    default: true

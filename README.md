@@ -38,15 +38,33 @@ Once installed, the plugin automatically works with your existing WorldGuard reg
 2. Set the entry flag to deny: `/rg flag myregion entry deny`
 3. Players who cannot enter the region will see a purple forcefield around it
 
+### Commands
+
+- `/forcefield debug` or `/ff debug` - Toggle debug mode on/off
+- `/forcefield reload` or `/ff reload` - Reload the configuration file
+- `/forcefield status` or `/ff status` - View plugin status and settings
+- `/forcefield info` or `/ff info` - View information about blocked regions nearby
+- `/forcefield help` or `/ff help` - Show command help
+
 ### Permissions
 
 Players who are members or owners of a region can enter it even if entry is denied for others. These players will not see the forcefield.
+
+- `regionforcefield.*` - Grants all permissions (default: op)
+- `regionforcefield.command` - Allows use of `/forcefield` command (default: true)
+- `regionforcefield.debug` - Allows toggling debug mode (default: op)
+- `regionforcefield.reload` - Allows reloading config (default: op)
+- `regionforcefield.status` - Allows viewing status (default: op)
+- `regionforcefield.info` - Allows viewing region info (default: true)
 
 ## Configuration
 
 Edit `plugins/RegionForcefield/config.yml`:
 
 ```yaml
+# Enable debug logging (useful for troubleshooting)
+debug: false
+
 # Update frequency (20 ticks = 1 second)
 update-interval-ticks: 20
 
@@ -75,6 +93,31 @@ particle-size: 1.0
 - Increase `particle-spacing` to reduce particle count
 - Set `render-walls: false` to only show edges
 - Increase `update-interval-ticks` if you don't need real-time updates
+
+## Troubleshooting
+
+### Forcefields not appearing
+
+1. Enable debug mode: `/forcefield debug` or set `debug: true` in config.yml
+2. Check the server console for debug messages
+3. Use `/forcefield info` to see if regions are being detected
+4. Verify the region has `entry deny` set: `/rg info <region>`
+5. Check you're not a member/owner of the region
+6. Ensure you're within render distance of the region (default: 100 blocks)
+
+### Plugin won't load
+
+1. Verify WorldGuard 7.0.14 or higher is installed
+2. Check server logs for error messages
+3. Ensure you're running Paper 1.21.8 or higher
+4. Verify Java 21 is being used
+
+### Performance issues
+
+1. Increase `particle-spacing` (less particles)
+2. Reduce `max-render-distance`
+3. Set `render-walls: false` (edges only)
+4. Increase `update-interval-ticks` (update less frequently)
 
 ## Building from Source
 

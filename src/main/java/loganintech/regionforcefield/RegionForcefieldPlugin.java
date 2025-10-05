@@ -1,8 +1,10 @@
 package loganintech.regionforcefield;
 
+import loganintech.regionforcefield.command.ForcefieldCommand;
 import loganintech.regionforcefield.forcefield.ForcefieldRenderer;
 import loganintech.regionforcefield.region.RegionPermissionChecker;
 import loganintech.regionforcefield.task.ForcefieldUpdateTask;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
@@ -32,6 +34,16 @@ public final class RegionForcefieldPlugin extends JavaPlugin {
             // Initialize components
             this.permissionChecker = new RegionPermissionChecker(this);
             this.forcefieldRenderer = new ForcefieldRenderer(this);
+
+            // Register commands
+            ForcefieldCommand commandExecutor = new ForcefieldCommand(this);
+            PluginCommand command = getCommand("forcefield");
+            if (command != null) {
+                command.setExecutor(commandExecutor);
+                command.setTabCompleter(commandExecutor);
+            } else {
+                getLogger().warning("Failed to register /forcefield command!");
+            }
 
             // Start the periodic update task
             this.updateTask = new ForcefieldUpdateTask(this, permissionChecker, forcefieldRenderer);
